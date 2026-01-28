@@ -12,36 +12,43 @@ namespace InfinityHeroes.News.UI
         [SerializeField] private Transform _contentContainer;
         [SerializeField] private GameObject _articlePrefab;
 
-        private NewsClient _newsClient;
+        //private NewsClient _newsClient;
 
         private void Awake()
         {
-            _newsClient = new NewsClient();
-            if (!IsValid()) return;
             _fetchButton.onClick.AddListener(FetchNews);
         }
 
         private async void FetchNews()
         {
+            NewsClient _newsClient = new NewsClient();
+
+            if (!IsValid()) return;
+
             // prevent spaming
             _fetchButton.interactable = false;
 
             try
             {
-                // clear existing items
-                foreach (Transform child in _contentContainer)
-                {
-                    Destroy(child.gameObject);
-                }
-
                 INewsResponse response = await _newsClient.GetArticlesAsync();
 
                 if (response != null && response.Articles != null)
                 {
+                    // clear the old items
+                    foreach (Transform child in _contentContainer)
+                    {
+                        Destroy(child.gameObject);
+                    }
+
+                    // place new items
                     foreach (var article in response.Articles)
                     {
                         CreateNewsItem(article);
                     }
+                }
+                else
+                {
+                    Debug.LogWarning("Fetch failed or returned no articles. Keeping old list.");
                 }
             }
             catch (Exception ex)
