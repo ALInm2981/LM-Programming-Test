@@ -28,16 +28,16 @@ namespace InfinityHeroes.News.UI
 
             try
             {
-                // clear existing items
-                foreach (Transform child in _contentContainer)
-                {
-                    Destroy(child.gameObject);
-                }
-
                 INewsResponse response = await _newsClient.GetArticlesAsync();
 
                 if (response != null && response.Articles != null)
                 {
+                    // clear existing items
+                    foreach (Transform child in _contentContainer)
+                    {
+                        Destroy(child.gameObject);
+                    }
+
                     foreach (var article in response.Articles)
                     {
                         CreateNewsItem(article);
